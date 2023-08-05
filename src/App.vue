@@ -11,8 +11,8 @@
       <h1 class="mb-5 text-2xl mt-10 ml-10 text-white">Kosmos!</h1>
     </div>
     <div class="w-1/2 flex flex-col justify-center items-center bg-gray-200">
-      <template v-if="!loggedIn"
-        ><h2 class="mb-5 text-xl">Login or register</h2>
+      <template v-if="!loggedIn">
+        <h2 class="mb-5 text-xl">Login or register</h2>
         <div class="w-full max-w-xs">
           <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             <div class="mb-4">
@@ -74,6 +74,10 @@
                 type="password"
                 placeholder="******************"
               />
+              <!-- Show error label if passwords don't match -->
+              <p v-if="!isPasswordMatch" class="text-red-500 text-sm">
+                Passwords do not match.
+              </p>
             </div>
             <div class="flex items-center justify-between">
               <button
@@ -103,8 +107,8 @@
           <p class="text-center text-gray-500 text-xs">
             &copy;2023 All rights reserved.
           </p>
-        </div></template
-      >
+        </div>
+      </template>
       <template v-else>
         <h2 class="mb-5 text-xl">Hello, {{ loggedInUserName }}!</h2>
         <button
@@ -113,8 +117,8 @@
           @click="loggedIn = !loggedIn"
         >
           Go Back!
-        </button></template
-      >
+        </button>
+      </template>
     </div>
   </section>
 </template>
@@ -161,20 +165,62 @@ function userSignIn() {
   if (user) {
     console.log("User logged in successfully!", user);
     loggedInUserName.value = user.name;
-    loggedIn.value = !loggedIn.value;
+    loggedIn.value = true;
+    // Clear the form fields
+    loginData.userName = "";
+    loginData.password = "";
+    loginData.name = "";
+    loginData.reenteredPassword = "";
+    // Show an alert for successful login
+    alert("Login successful!");
   } else {
     console.log("Invalid credentials");
+    // Show an alert for unsuccessful login
+    alert("Invalid credentials. Please try again.");
   }
 }
 
 function registerUser() {
-  users.push({
-    id: users.length + 1,
-    userName: loginData.userName,
-    password: loginData.password,
-    name: loginData.name,
-  });
-  console.log("User registered!");
+  // Check if any of the fields are empty
+  if (
+    loginData.userName === "" ||
+    loginData.password === "" ||
+    loginData.name === "" ||
+    loginData.reenteredPassword === ""
+  ) {
+    console.log("Please fill in all fields.");
+    // Show an alert for missing fields
+    alert("Please fill in all fields.");
+  } else {
+    const existingUser = users.find(
+      (user) => user.userName === loginData.userName
+    );
+
+    if (existingUser) {
+      console.log(
+        "Username already exists. Please choose a different username."
+      );
+      // Show an alert for username already exists
+      alert("Username already exists. Please choose a different username.");
+    } else {
+      users.push({
+        id: users.length + 1,
+        userName: loginData.userName,
+        password: loginData.password,
+        name: loginData.name,
+      });
+      console.log("User registered successfully!");
+      // Clear the form fields
+      loginData.userName = "";
+      loginData.password = "";
+      loginData.name = "";
+      loginData.reenteredPassword = "";
+      // Show an alert for successful registration
+      alert(
+        "Registration successful! You can now sign in with your new account."
+      );
+    }
+  }
 }
 
 function signInOrRegister() {
